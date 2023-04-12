@@ -1,4 +1,4 @@
-# Hole.io
-Clone of mobile game hole.io using Unity.
+# Rabbit Invansion
+You as a greedy rabbit will conquer the world by eat all things.
 
-Made by FlopCoat - https://overlapstudio.org
+Game reference: hole.io
