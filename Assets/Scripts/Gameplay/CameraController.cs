@@ -5,37 +5,24 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 	public Camera kamera;
-	private Vector3 defaultPos;
-	private Vector3 step;
 
-	private void Awake()
-	{
-		kamera = GetComponent<Camera>();
-		GameManager.gm.cam = this;
-	}
+	private GameObject player;
+	public Vector3 offsetPos;
+	public Vector3 cameraRotation;
 
 	private void Start()
-	{
-		defaultPos = transform.localPosition;
-		step = defaultPos / GameManager.gm.pc.scale;
+    {
+		player = GameObject.FindWithTag("Player"); // Find the GameObject named Player
 	}
 
-    public void ZoomOut ()
+	void OnEnable()
 	{
-		StartCoroutine(AnimateZoomOut());
+		gameObject.transform.parent = null; // This makes the camera a parent object rather than a child
 	}
 
-	private IEnumerator AnimateZoomOut()
+	void LateUpdate()
 	{
-		Vector3 startPos = transform.localPosition;
-		Vector3 targetPos = step * GameManager.gm.pc.scale;
-
-		var t = 0f;
-		while (t <= 1f)
-		{
-			transform.localPosition = Vector3.Lerp(startPos, targetPos, t);
-			t += Time.deltaTime;
-			yield return null;
-		}
+		transform.rotation = Quaternion.Euler(cameraRotation.x, cameraRotation.y, cameraRotation.z); // Set the camera's rotation
+		transform.position = player.transform.position + offsetPos; // Set cameras final position
 	}
 }

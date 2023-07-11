@@ -5,37 +5,39 @@ using UnityEngine;
 public class CameraDecision : MonoBehaviour
 {
 	public Camera kamera;
-	private Vector3 defaultPos;
-	private Vector3 step;
 
-	private void Awake()
-	{
-		kamera = GetComponent<Camera>();
-		//DecisionManager.dm.cam = this;
-	}
+	private GameObject player;
+	public Vector3 offsetPos;
 
-	private void Start()
-	{
-		defaultPos = transform.localPosition;
-		step = defaultPos / DecisionManager.dm.pd.scale;
-	}
+    bool isGameOver;
 
-    public void ZoomOut ()
-	{
-		StartCoroutine(AnimateZoomOut());
-	}
+    private void Start()
+    {
+        isGameOver = false;
+        player = GameObject.FindWithTag("Player"); // Find the GameObject named Player
+    }
 
-	private IEnumerator AnimateZoomOut()
-	{
-		Vector3 startPos = transform.localPosition;
-		Vector3 targetPos = step * DecisionManager.dm.pd.scale;
+    void OnEnable()
+    {
+        gameObject.transform.parent = null; // This makes the camera a parent object rather than a child
+    }
 
-		var t = 0f;
-		while (t <= 1f)
-		{
-			transform.localPosition = Vector3.Lerp(startPos, targetPos, t);
-			t += Time.deltaTime;
-			yield return null;
-		}
-	}
+    private void Update()
+    {
+        if (isGameOver)
+        {
+            offsetPos = Vector3.MoveTowards(offsetPos, new Vector3(0f, 3f, -10f), 5 * Time.deltaTime);
+        }
+    }
+
+    void LateUpdate()
+    {
+        transform.rotation = Quaternion.Euler(45f, 0, 0); // Set the camera's rotation
+        transform.position = player.transform.position + offsetPos; // Set cameras final position
+    }
+
+    public void GameOver()
+    {
+        isGameOver = true;
+    }
 }

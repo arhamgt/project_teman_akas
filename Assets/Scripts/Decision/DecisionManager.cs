@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class DecisionManager : MonoBehaviour
@@ -9,7 +10,6 @@ public class DecisionManager : MonoBehaviour
 	public PlayerDecision pd;
     public CameraDecision cam;
 
-    public bool started;
     public bool gameOver;
 
 	public Animator anim;
@@ -19,44 +19,25 @@ public class DecisionManager : MonoBehaviour
 		if (!dm)
 		{
 			dm = this;
-			DontDestroyOnLoad(this);
 		}
 	}
 
-	void Start()
-    {
-        Play();
-    }
-
-    public void BackToGameplay()
-    {
-        PlayerPrefs.SetInt("Done", 1);
-        StartCoroutine(WaitCutscene());
-    }
-
-    public void GameFinished()
-    {
-        PlayerPrefs.SetInt("Done", 2);
-        StartCoroutine(WaitCutscene());
-    }
-
-    IEnumerator WaitCutscene()
+    public IEnumerator WaitCutscene()
     {
 		gameOver = true;
 		anim.Play("cutscene_fadeout");
+		
         yield return new WaitForSeconds(3f);
 		gameOver = false;
-		SceneManager.LoadScene(0);
+		SceneManager.LoadScene(1);
     }
-
-	public void Play()
-	{
-		started = true;
-	}
 
 	private void Update()
 	{
-		if (!started || gameOver)
+		if (Input.GetKeyDown(KeyCode.Escape))
+			Application.Quit();
+
+		if (gameOver)
 		{
 			return;
 		}

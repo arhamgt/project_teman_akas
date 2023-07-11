@@ -8,32 +8,35 @@ public class Obstacle : MonoBehaviour
     public float speed;
     public bool eaten = false;
 
+    public Collider coll;
+
     private void OnTriggerStay(Collider other)
     {
         PlayerControler Player =  other.GetComponent<PlayerControler>();
         if (other.CompareTag("Player") && Player.GetLevel() >= levelToEat)
         {
             eaten = true;
-            transform.position = Vector3.MoveTowards(transform.position, other.transform.position, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, other.transform.position, speed * 3 * Time.deltaTime);
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision other)
     {
-        PlayerControler Player = other.GetComponent<PlayerControler>();
-        if (other.CompareTag("Player") && Player.GetLevel() >= levelToEat)
+        PlayerControler Player = other.gameObject.GetComponent<PlayerControler>();
+        if (other.gameObject.CompareTag("Player") && Player.GetLevel() >= levelToEat)
         {
+            coll.isTrigger = true;
             Player.AddScore(1);
+            Player.PlaySfx();
         }
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         eaten = false;
+        coll = GetComponent<Collider>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (eaten)

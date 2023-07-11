@@ -1,80 +1,76 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerControler : MonoBehaviour
 {
 	public int finishScore;
 	public int score;
 	public int level;
+
 	public float scale;
-	public float speed;
 	public float radius;
 	public bool sizeUp;
 
 	public Transform visuals;
-	public Transform directionRing;
-	public Transform playerCanvas;
-	public GameObject scoreIndicator;
 
-	public SphereCollider detector;
+	public CapsuleCollider detector;
 	public BoxCollider[] colliders;
 	public List<Rigidbody> victims;
-	
-	public float maxDragDistance = 40f;
-	private float curDragDistance;
-	private Vector3 moveDirection;
-	private Vector3 dragStartPos;
 
-	public Animator anim;
+	public Animator cutscene_anim;
+
+	public Rigidbody rb;
+
+	public Slider slider;
+	public MeshRenderer water;
+
+	private float speed = 0.35f;
+	private float speedHalved;
+	public float speedOrigin = 0.35f;
+
+	public AudioSource sfx;
+
+	public MeshRenderer bunny_ear;
+	public MeshRenderer bunny_head;
+
+	private float g;
 
 	private void Awake()
-	{
-		GameManager.gm.pc = this;
-	}
+    {
+        GameManager.gm.pc = this;
+    }
 
-	private void Start()
+    private void Start()
 	{
-		level = 0;
+		g = 1f;
+		speedHalved = speedOrigin * 0.75f;
 		RefreshScale();
 	}
 
 	private void Update()
     {
-		if (!GameManager.gm.started || GameManager.gm.gameOver)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+			Application.Quit();
+        }
+
+		if (GameManager.gm.gameOver)
 		{
 			return;
 		}
 
 		if (finishScore <= score)
         {
-			anim.Play("cutscene_fadeout");
+			water.enabled = false;
+			cutscene_anim.Play("cutscene_fadeout");
 			RefreshScale();
-			StartCoroutine(GameManager.gm.SceneTransition(1));
-			//GameManager.gm.cam.ZoomOut(3f);
-			//GameManager.gm.GameOver();
-		}
-
-		Vector3 mousePos = Input.mousePosition;
-		if (Input.GetMouseButtonDown(0))
-		{
-			dragStartPos = mousePos;
-		}
-		else if (Input.GetMouseButton(0))
-		{
-			curDragDistance = (mousePos - dragStartPos).magnitude;
-
-			if (curDragDistance > maxDragDistance)
-			{
-				dragStartPos = mousePos - moveDirection * maxDragDistance;
-				curDragDistance = (mousePos - dragStartPos).magnitude;
-			}
-
-			moveDirection = (mousePos - dragStartPos).normalized;
-			var direction = new Vector3(moveDirection.x, 0, moveDirection.y);
-			transform.position += direction * speed * curDragDistance * Time.deltaTime;
-			directionRing.rotation = Quaternion.LookRotation(direction) /* Quaternion.Euler(new Vector3(90, 0, 0))*/;
+			if(SceneManager.GetActiveScene().name == "Gameplay0_New")
+				StartCoroutine(GameManager.gm.SceneTransition(2));
+			else
+				StartCoroutine(GameManager.gm.SceneTransition(1));
 		}
 
 		var nearbyObjects = Physics.OverlapSphere(transform.position, radius);
@@ -94,31 +90,53 @@ public class PlayerControler : MonoBehaviour
 			{
 				victims.Add(nearbyObjectRb);
 				nearbyObject.gameObject.layer = 10;
-				//nearbyObjectRb.isKinematic = false;
 			}
 		}
 	}
 
 	private void FixedUpdate()
 	{
-		if (!GameManager.gm.started || GameManager.gm.gameOver)
+		if (GameManager.gm.gameOver)
 		{
 			return;
 		}
+
+		float horizontal = Input.GetAxis("Horizontal"); // set a float to control horizontal input
+		float vertical = Input.GetAxis("Vertical"); // set a float to control vertical input
+		PlayerMove(horizontal, vertical); // Call the move player function sending horizontal and vertical movements
+
+		if (transform.position.z < 15)
+			transform.position = new Vector3(transform.position.x, transform.position.y, 15.15f);
+		else if (transform.position.z > 35)
+			transform.position = new Vector3(transform.position.x, transform.position.y, 34.85f);
+		else if (transform.position.x > 35)
+			transform.position = new Vector3(34.85f, transform.position.y, transform.position.z);
+		else if (transform.position.x < 15)
+			transform.position = new Vector3(15.15f, transform.position.y, transform.position.z);
 	}
 
-    private void OnTriggerExit(Collider other)
+	private void PlayerMove(float h, float v)
 	{
-		if (other.transform.position.y < 0)
+		if (h != 0f || v != 0f) // If horizontal or vertical are pressed then continue
 		{
-			other.gameObject.SetActive(false);
-
-			Rigidbody victimRb = other.GetComponent<Rigidbody>();
-			if (victimRb)
+			if (h != 0f && v != 0f) // If horizontal AND vertical are pressed then continue
 			{
-				victims.Remove(victimRb);
+				speed = speedHalved; // Modify the speed to adjust for moving on an angle
 			}
+			else // If only horizontal OR vertical are pressed individually then continue
+			{
+				speed = speedOrigin; // Keep speed to it's original value
+			}
+
+			Vector3 targetDirection = new Vector3(h, 0f, v); // Set a direction using Vector3 based on horizontal and vertical input
+			rb.MovePosition(rb.position + targetDirection * speed * Time.deltaTime); // Move the players position based on current location while adding the new targetDirection times speed
+			RotatePlayer(targetDirection); // Call the rotate player function sending the targetDirection variable
 		}
+	}
+
+	private void RotatePlayer(Vector3 dir)
+	{
+		rb.MoveRotation(Quaternion.LookRotation(dir)); // Rotate the player to look at the new targetDirection
 	}
 
 	public void AddScore(int amount)
@@ -126,34 +144,13 @@ public class PlayerControler : MonoBehaviour
 		score += amount;
 		sizeUp = false;
 		CheckSize();
-
-		GameObject indicator = Instantiate(scoreIndicator, playerCanvas);
-		TextMeshProUGUI scoreText = indicator.GetComponent<TextMeshProUGUI>();
-		scoreText.text = "+" + amount.ToString();
-		StartCoroutine(DisableAfter(indicator, 2f));
-
-		GameManager.gm.ui.scoreText.text = score.ToString();
-	}
-
-	private IEnumerator DisableAfter(GameObject obj, float delay)
-	{
-		if (!obj)
-		{
-			yield break;
-		}
-
-		yield return new WaitForSeconds(delay);
-
-		if (!obj)
-		{
-			yield break;
-		}
-		obj.SetActive(false);
+		
+		slider.value = score;
 	}
 
 	public void CheckSize()
 	{
-		if (!sizeUp && score % 10 == 0)
+		if (!sizeUp && score % 1 == 0)
 		{
 			sizeUp = true;
 			RefreshScale();			
@@ -165,11 +162,10 @@ public class PlayerControler : MonoBehaviour
 		level++;
 		scale++;
 		radius++;
-		visuals.localScale = new Vector3(scale, scale, scale);
-		visuals.localPosition = new Vector3(0, -scale / 2f - 0.49f, 0);
-		//detector.center = new Vector3(0, -1f - scale / 2f, 0);
-		detector.center = new Vector3(0, scale / 5f, 0);
-		detector.radius = scale / 3f;
+
+		float newScale = scale / 5f;
+		visuals.localScale = new Vector3(newScale,newScale,newScale);
+		detector.radius = scale / 5f;
 		
 		foreach (var coll in colliders)
 		{
@@ -177,12 +173,39 @@ public class PlayerControler : MonoBehaviour
 			coll.center = direction * (1 + scale / 100f);
 		}
 
-		GameManager.gm.cam.ZoomOut();
+		g -= 0.1f;
+		Color customColor = new Color(1f, g, 0f, 1f);
+		bunny_head.material.SetColor("_BaseColor", customColor);
+		bunny_ear.material.SetColor("_BaseColor", customColor);
 	}
 
 	public int GetLevel()
     {
 		return level;
+    }
+
+	public void SpeedBuff(float speed, float duration)
+    {
+		StartCoroutine(OnBuff(speed, duration));
+    }
+
+	IEnumerator OnBuff(float s, float t)
+    {
+		float s1 = speedOrigin;
+		float s2 = speedHalved;
+
+		speedOrigin *= s;
+		speedHalved *= s;
+
+		yield return new WaitForSeconds(t);
+
+		speedOrigin = s1;
+		speedHalved = s2;
+    }
+
+	public void PlaySfx()
+    {
+		sfx.Play();
     }
 
 	private void OnDrawGizmos()
