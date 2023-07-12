@@ -845,14 +845,9 @@ MonoBehaviour:
   score: 0
   level: 0
   scale: 3
-  speed: 0.1
   radius: 3
   sizeUp: 0
   visuals: {fileID: 4961508937833212487}
-  directionRing: {fileID: 4961508937833212487}
-  playerCanvas: {fileID: 0}
-  scoreIndicator: {fileID: 5265117283026726392, guid: d6ab584c21e3e834b8e57d64589ae59a,
-    type: 3}
   detector: {fileID: 0}
   colliders:
   - {fileID: 4961508936536686535}
@@ -864,9 +859,15 @@ MonoBehaviour:
   - {fileID: 4961508937375796431}
   - {fileID: 4961508936066905274}
   victims: []
-  maxDragDistance: 75
   cutscene_anim: {fileID: 0}
-  player_anim: {fileID: 0}
+  rb: {fileID: 0}
+  slider: {fileID: 0}
+  water: {fileID: 0}
+  speedOrigin: 0.35
+  sfx: {fileID: 0}
+  bunny_ear: {fileID: 0}
+  bunny_head: {fileID: 0}
+  vfx: {fileID: 0}
 --- !u!1 &4961508937813009847
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,6 +944,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4850494902619521029}
   - component: {fileID: 4961508936965924819}
+  - component: {fileID: 8693485389708545832}
   m_Layer: 0
   m_Name: bunny
   m_TagString: Untagged
@@ -982,6 +984,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetY: 1
   WaterVolumeHelper: {fileID: 0}
+--- !u!95 &8693485389708545832
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195953057095654079}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 370ba22993108604085105f74e9fc84e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8019068528703664952
 GameObject:
   m_ObjectHideFlags: 0

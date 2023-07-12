@@ -12,11 +12,15 @@ public class Obstacle : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        PlayerControler Player =  other.GetComponent<PlayerControler>();
+        PlayerControler Player = other.GetComponent<PlayerControler>();
         if (other.CompareTag("Player") && Player.GetLevel() >= levelToEat)
         {
             eaten = true;
-            transform.position = Vector3.MoveTowards(transform.position, other.transform.position, speed * 3 * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                other.transform.position,
+                speed * 3 * Time.deltaTime
+            );
         }
     }
 
@@ -27,7 +31,6 @@ public class Obstacle : MonoBehaviour
         {
             coll.isTrigger = true;
             Player.AddScore(1);
-            Player.PlaySfx();
         }
     }
 
