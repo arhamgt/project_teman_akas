@@ -102,14 +102,14 @@ public class PlayerControler : MonoBehaviour
         float vertical = Input.GetAxis("Vertical"); // set a float to control vertical input
         PlayerMove(horizontal, vertical); // Call the move player function sending horizontal and vertical movements
 
-        if (transform.position.z < 15)
-            transform.position = new Vector3(transform.position.x, transform.position.y, 15.15f);
+        if (transform.position.z < 16)
+            transform.position = new Vector3(transform.position.x, transform.position.y, 16.15f);
         else if (transform.position.z > 35)
             transform.position = new Vector3(transform.position.x, transform.position.y, 34.85f);
-        else if (transform.position.x > 35)
-            transform.position = new Vector3(34.85f, transform.position.y, transform.position.z);
-        else if (transform.position.x < 15)
-            transform.position = new Vector3(15.15f, transform.position.y, transform.position.z);
+        else if (transform.position.x > 31)
+            transform.position = new Vector3(30.85f, transform.position.y, transform.position.z);
+        else if (transform.position.x < 19)
+            transform.position = new Vector3(19.15f, transform.position.y, transform.position.z);
     }
 
     private void PlayerMove(float h, float v)
@@ -144,24 +144,17 @@ public class PlayerControler : MonoBehaviour
         bunnyAnim.SetTrigger("Eat");
 
         score += amount;
-        sizeUp = false;
-        CheckSize();
+        RefreshScale();
+        if (score % 11 == 0)
+        {
+            level++;
+        }
 
         slider.value = score;
     }
 
-    public void CheckSize()
-    {
-        if (!sizeUp && score % 1 == 0)
-        {
-            sizeUp = true;
-            RefreshScale();
-        }
-    }
-
     public void RefreshScale()
     {
-        level++;
         scale++;
 
         float newScale = scale / 21f;

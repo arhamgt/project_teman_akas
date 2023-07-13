@@ -16,7 +16,6 @@ public class RandomBuff : MonoBehaviour
                 transform.position.z + Random.Range(.5f, 1.5f)
             );
             Instantiate(buff, randomPos, Quaternion.identity);
-            Debug.Log("spawn");
         }
     }
 }

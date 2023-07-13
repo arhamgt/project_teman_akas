@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour
 {
     public Animator anim;
+
     public void ChangeScene()
     {
         StartCoroutine(Delay());
@@ -16,5 +17,13 @@ public class Menu : MonoBehaviour
         anim.Play("cutscene_fadeout");
         yield return new WaitForSeconds(3f);
         SceneManager.LoadScene(1);
+    }
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            StartCoroutine(Delay());
+        }
     }
 }

@@ -10,15 +10,20 @@ public class Buff : MonoBehaviour
     public float speedEaten;
     public bool eaten = false;
 
+    public AudioSource sfx;
     public Collider coll;
 
     private void OnTriggerStay(Collider other)
     {
-        PlayerControler Player =  other.GetComponent<PlayerControler>();
+        PlayerControler Player = other.GetComponent<PlayerControler>();
         if (other.CompareTag("Player"))
         {
             eaten = true;
-            transform.position = Vector3.MoveTowards(transform.position, other.transform.position, speedEaten * 3 * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                other.transform.position,
+                speedEaten * 3 * Time.deltaTime
+            );
         }
     }
 
@@ -27,6 +32,7 @@ public class Buff : MonoBehaviour
         PlayerControler Player = other.GetComponent<PlayerControler>();
         if (other.CompareTag("Player"))
         {
+            sfx.Play();
             Player.SpeedBuff(buffSpeed, buffDuration);
         }
     }

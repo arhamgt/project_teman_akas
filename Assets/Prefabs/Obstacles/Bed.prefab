@@ -62,7 +62,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4, y: 1.5, z: 4}
+  m_Size: {x: 4, y: 3, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8827016989972980197
 MonoBehaviour:
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelToEat: 1
-  speed: 10
+  speed: 0.5
   eaten: 0
   coll: {fileID: 0}
 --- !u!114 &-5309546078892236254

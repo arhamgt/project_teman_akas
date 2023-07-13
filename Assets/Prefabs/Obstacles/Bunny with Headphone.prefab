@@ -159,8 +159,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 818cfaddbe6b0904a90ab2a2ba7d5f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelToEat: 3
-  speed: 10
+  levelToEat: 1
+  speed: 0.5
   eaten: 0
   coll: {fileID: 0}
 --- !u!114 &2931676609393387367
