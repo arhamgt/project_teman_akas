@@ -64,7 +64,7 @@ public class PlayerControler : MonoBehaviour
             water.enabled = false;
             cutscene_anim.Play("cutscene_fadeout");
             RefreshScale();
-            if (SceneManager.GetActiveScene().name == "Gameplay0_New")
+            if (SceneManager.GetActiveScene().name == "Gameplay0_Akas")
                 StartCoroutine(GameManager.gm.SceneTransition(2));
             else
                 StartCoroutine(GameManager.gm.SceneTransition(1));
